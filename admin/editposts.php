@@ -31,12 +31,14 @@ if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
         $errors = validText($errors, $content, 'content', 10, 2000);
 
         if (count($errors) === 0) {
-            $requete_update = "UPDATE articles SET title= :title, auteur= :auteur, content = :content, modified_at = NOW()  WHERE id= :id";
+            $requete_update = "UPDATE articles SET title= :title, auteur= :auteur, content = :content, status = :status, modified_at = NOW() WHERE id= :id";
             $query = $pdo->prepare($requete_update);
             $query->bindValue(':title', $title, PDO::PARAM_STR);
             $query->bindValue(':auteur', $auteur, PDO::PARAM_STR);
             $query->bindValue(':content', $content, PDO::PARAM_STR);
+            $query->bindValue(':status', $status, PDO::PARAM_STR);
             $query->bindValue(':id', $id, PDO::PARAM_INT);
+
             $query->execute();
             header('Location: listposts.php');
         }
@@ -78,6 +80,32 @@ include('inc/header-back.php'); ?>
                                                         } ?>">
     <span class="error"><?php if (!empty($errors['auteur'])) {
                             echo $errors['auteur'];
+                        } ?></span>
+
+    <?php
+    $status = array(
+        'draft' => 'brouillon',
+        'publish' => 'Publié'
+    );
+
+    ?>
+    <select name="status">
+        <option value="">---------------------</option>
+        <?php foreach ($status as $key => $value) {
+            $selected = '';
+            if (!empty($_POST['status'])) {
+                if ($_POST['status'] == $key) {
+                    $selected = ' selected="selected"';
+                }
+            } elseif ($article['status'] == $key) {
+                $selected = ' selected="selected"';
+            }
+        ?>
+            <option value="<?php echo $key; ?>" <?php echo $selected; ?>><?php echo $value; ?></option>
+        <?php } ?>
+    </select>
+    <span class="error"><?php if (!empty($errors['status'])) {
+                            echo $errors['status'];
                         } ?></span>
     <input type="submit" name="submitted" value="Editer">
 </form>
