@@ -24,11 +24,13 @@ if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
         $title = cleanXss('title');
         $auteur = cleanXss('auteur');
         $content = cleanXss('content');
+        $content = cleanXss('status');
 
 
         $errors = validText($errors, $title, 'title', 2, 100);
         $errors = validText($errors, $auteur, 'auteur', 2, 50);
         $errors = validText($errors, $content, 'content', 10, 2000);
+        $errors = validText($errors, $status, 'status', 3, 10);
 
         if (count($errors) === 0) {
             $requete_update = "UPDATE articles SET title= :title, auteur= :auteur, content = :content, status = :status, modified_at = NOW() WHERE id= :id";
